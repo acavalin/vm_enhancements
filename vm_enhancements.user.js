@@ -5,7 +5,7 @@
 // @include     https://apps.unipd.it/verificasmart/*
 // @include     https://apps.unipd.it/richieste3/index/richiesta/*
 // @icon        data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAARVBMVEX///+bABSbABSbABSbABSbABSbABSbABSbABSbABSbABSbABSbABSbABSbABSbABT+/Pz////36uz//v768/TitbvWl594JUBZAAAAD3RSTlMALf3SVOl3rfH+lPvgwffWvIWXAAAAAWJLR0QAiAUdSAAAAAd0SU1FB+UBDhEHMCOeET4AAABcSURBVBjTlY/JDoAgDEShIIuKI4r+/6cqJSxHfYem89KkrRCMJCVGNAFTS8Y6ZLyaNQt0lu9ij0A8xolXnPgpUkpN+GyuO9eVhe1rZbnd1WzqN4Ejmf6tVLSF0j53qQiy0JEdaAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMS0wMS0xNFQxNjowNzo0OCswMTowME/uB4QAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjEtMDEtMTRUMTY6MDc6NDgrMDE6MDA+s784AAAAAElFTkSuQmCC
-// @version     1.0.0
+// @version     2.0.0
 // @grant       none
 // ==/UserScript==
 
@@ -55,6 +55,37 @@ function to_textarea(selector, rows) {
 
 (function ($) { $(function () {
 //------------------------------------------------------------------------------
+if (window.location.pathname == '/verificasmart/') {
+  setInterval(function () {
+    $('#myGrid a:not(.state_link_added):contains("Visualizza")').each(function () {
+      var link = $(this).addClass('state_link_added').clone();
+      
+      var url   = $(this).attr('href'),
+          testo = 'xxx';
+      
+      switch ($('#procureTab a.active').text().trim()) {
+        case 'ToDo':
+          testo = 'Conferma';
+          url   = url.replace('rendicontaGiorno', 'confermaRendiconto');
+          break;
+        case 'Confermate':
+          testo = 'InBozza';
+          url   = url.replace('rendicontaGiorno', 'setBozzaRendiconto');
+          break;
+      }//switch
+      
+      if (testo != 'xxx')
+        link.text(testo).attr('href', url).appendTo($(this).parent()).before(' | ');
+    });
+  }, 500);
+}//if /verificasmart/
+
+if (window.location.pathname.match(/verificasmart.rendicontaGiorno/)) {
+  // apri tutte le attivita
+  $('#card-attivita a.card-link').click();
+}//if /verificasmart/rendicontaGiorno
+
+
 if (window.location.pathname.match(/verificasmart.attivita/)) {
   // fai spazio verticale per non scorrere la pagina
   $('div.jumbotron').css('padding-top', 0);
